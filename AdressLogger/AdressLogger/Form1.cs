@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define HFW
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -22,6 +24,13 @@ namespace AdressLogger
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+        struct GameData
+        {
+            public string executableName;
+            public DeepPointer[] ptr;
+        };
+
+        static GameData[] gameData = new GameData[3];
 
         public Form1()
         {
@@ -31,31 +40,73 @@ namespace AdressLogger
             {
                 myDataPrevBuf.Add(new myDataDef());
             }
+            gameData[0].executableName = "HorizonZeroDawn";
+            gameData[0].ptr = new DeepPointer[]
+            {
+                new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x120}),
+                new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x128}),
+                new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x130}),
+                //new DeepPointer("", 0x0714F830, new int[] {0x160}), // time played
+                new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x1F0,0x60}),
+                new DeepPointer("", 0x0714F830, new int[] {0x20}),
+                new DeepPointer("", 0x0714F830, new int[] {0x4B4}),
+                new DeepPointer("", 0x0714F830, new int[] {0x158}), // time factor
+                new DeepPointer("", 0x0714F830), // world-active
+                new DeepPointer("", 0x07152640) // tabbed out
+            };
+
+            gameData[1].executableName = "HorizonZeroDawnRemastered";
+            gameData[1].ptr = new DeepPointer[]
+            {
+                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x150}),
+                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x158}),
+                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x160}),
+                //new DeepPointer("", 0x099A9A38, new int[] {0x160}), // time played
+                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x208,0x60}),
+                new DeepPointer("", 0x099A9A38, new int[] {0x20}),
+                new DeepPointer("", 0x099A9A38, new int[] {0x4DC}),
+                new DeepPointer("", 0x099A9A38, new int[] {0x158}), // time factor
+                new DeepPointer("", 0x099A9A38), // N/A
+                new DeepPointer("", 0x099A9A38, new int[] {0x172}) // tabbed in
+            };
+            gameData[2].executableName = "HorizonForbiddenWest";
+            gameData[2].ptr = new DeepPointer[]
+            {
+                new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xD8}),
+                new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE0}),
+                new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE8}),
+                new DeepPointer("", 0x8982DA0, new int[] {0x1C10, 0x0, 0x10, 0xD0, 0x70}),
+                new DeepPointer("", 0x08983150, new int[] {0x20}),
+                new DeepPointer("", 0x08983150, new int[] {0x4B4}),
+                new DeepPointer("", 0x08983150, new int[] {0x158}), // time factor
+                new DeepPointer("", 0x08983150), // N/A
+                new DeepPointer("", 0x08983150) // N/A
+            };
+            comboBox1.SelectedIndex = 0;
         }
 
-
-        // HZD Steam pointers
-        static DeepPointer[] ptrs = {
-            new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x120}),
-            new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x128}),
-            new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x130}),
-            new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x1F0,0x60}),
-            new DeepPointer("", 0x0714F830, new int[] {0x20}),
-            new DeepPointer("", 0x0714F830, new int[] {0x4B4}),
-            new DeepPointer("", 0x0714F830, new int[] {0x158}), // time factor
-            new DeepPointer("", 0x0714F830, new int[] {0x58, 0xA5}), // cutscene?
-            new DeepPointer("", 0x07152640) // tabbed out
-        };
-
-
         static Process _game = null;
-        string saveFolder = @"C:\Speedrunning-dev\LR-repo\CE-tables\";
+        string saveFolder = @"C:\Speedrunning-dev\AS-repo\CE-tables\";
         List<myDataDef> myDataPrevBuf = new List<myDataDef>();
         List<myDataDef> myData = new List<myDataDef>();
         string[] tempLbls = new string[3];
+        static int idx = 0;
 
         public struct myDataDef
         {
+            public DateTime Time;
+            public double PosX;
+            public double PosY;
+            public double PosZ;
+            public double Velocity;
+            public double Heading;
+            public byte Invulnerable;
+            public uint Pause;
+            public uint Loading;
+            public byte TimeFac;
+            public ulong WorldActive;
+            public byte WindowActive;
+
             public myDataDef(ref Process _game)
             {
                 Time = DateTime.Now;
@@ -68,19 +119,19 @@ namespace AdressLogger
                 Pause = uint.MaxValue;
                 Loading = uint.MaxValue;
                 TimeFac = byte.MaxValue;
-                Cutscene = byte.MaxValue;
+                WorldActive = 0;
                 WindowActive = byte.MaxValue;
                 if (_game != null)
                 {
-                    PosX = ptrs[0].Deref<Double>(_game, Double.NaN);
-                    PosY = ptrs[1].Deref<Double>(_game, Double.NaN);
-                    PosZ = ptrs[2].Deref<Double>(_game, Double.NaN);
-                    Invulnerable = ptrs[3].Deref<byte>(_game, byte.MaxValue);
-                    Pause = ptrs[4].Deref<uint>(_game, uint.MaxValue);
-                    Loading = ptrs[5].Deref<uint>(_game, uint.MaxValue);
-                    TimeFac = ptrs[6].Deref<byte>(_game, byte.MaxValue);
-                    Cutscene = ptrs[7].Deref<byte>(_game, byte.MaxValue);
-                    WindowActive = ptrs[8].Deref<byte>(_game, byte.MaxValue);
+                    PosX = gameData[idx].ptr[0].Deref<Double>(_game, Double.NaN);
+                    PosY = gameData[idx].ptr[1].Deref<Double>(_game, Double.NaN);
+                    PosZ = gameData[idx].ptr[2].Deref<Double>(_game, Double.NaN);
+                    Invulnerable = gameData[idx].ptr[3].Deref<byte>(_game, byte.MaxValue);
+                    Pause = gameData[idx].ptr[4].Deref<uint>(_game, uint.MaxValue);
+                    Loading = gameData[idx].ptr[5].Deref<uint>(_game, uint.MaxValue);
+                    TimeFac = gameData[idx].ptr[6].Deref<byte>(_game, byte.MaxValue);
+                    WorldActive = gameData[idx].ptr[7].Deref<ulong>(_game, ulong.MaxValue);
+                    WindowActive = gameData[idx].ptr[8].Deref<byte>(_game, byte.MaxValue);
                 }
             }
 
@@ -104,18 +155,6 @@ namespace AdressLogger
                 }
             }
 
-            public DateTime Time;
-            public double PosX;
-            public double PosY;
-            public double PosZ;
-            public double Velocity;
-            public double Heading;
-            public byte Invulnerable;
-            public uint Pause;
-            public uint Loading;
-            public byte TimeFac;
-            public byte Cutscene;
-            public byte WindowActive;
             public bool valid()
             {
                 return (!Double.IsNaN(PosX) && !Double.IsNaN(PosY) && !Double.IsNaN(PosZ) && Loading == 0 && Pause == 0);
@@ -127,14 +166,14 @@ namespace AdressLogger
 
             public static string LogHeaderFile()
             {
-                return "t,t_rec,X,Y,Z,vel,head,invul,pause,load,timeMul,cutscene,windowActive";
+                return "t,t_rec,X,Y,Z,vel,head,invul,pause,load,timeMul,worldActive,windowActive";
             }
 
             public string ToString(long timeRef = 0)
             {
-                // t,t_rec,X,Y,Z,vel,head,invul,pause,load,TF,CS,WindowActive
+                // t,t_rec,X,Y,Z,vel,head,invul,pause,load,TF,worldA,WindowActive
                 double elapsedSecs = (Time.Ticks - timeRef) / ((double)System.TimeSpan.TicksPerSecond);
-                return Time.ToString("yyyy-MM-ddTHH-mm-ss.FFF") + "," + elapsedSecs.ToString("0.000") + "," + PosX.ToString("0.000") + "," + PosY.ToString("0.000") + "," + PosZ.ToString("0.000") + "," + Velocity.ToString("0.000") + "," + Heading.ToString("000") + ",0x" + Invulnerable.ToString("X02") + ",0x" + Pause.ToString("X08") + ",0x" + Loading.ToString("X08") + ",0x" + TimeFac.ToString("X02") + ",0x" + Cutscene.ToString("X02") + ",0x" + WindowActive.ToString("X02");
+                return Time.ToString("yyyy-MM-ddTHH-mm-ss.FFF") + "," + elapsedSecs.ToString("0.000") + "," + PosX.ToString("0.000") + "," + PosY.ToString("0.000") + "," + PosZ.ToString("0.000") + "," + Velocity.ToString("0.000") + "," + Heading.ToString("000") + ",0x" + Invulnerable.ToString("X02") + ",0x" + Pause.ToString("X08") + ",0x" + Loading.ToString("X08") + ",0x" + TimeFac.ToString("X02") + ",0x" + ((byte)((WorldActive>0)?1:0)).ToString("X02") + ",0x" + WindowActive.ToString("X02");
             }
 
             public void WriteToLabels(out string textPos, out string textInfo, out string textStates)
@@ -146,10 +185,10 @@ namespace AdressLogger
                     "\nHead:\n" + Heading.ToString("000");
                 textStates = "States:\nPause " + Pause.ToString("X08") +
                     "\nLoads " + Loading.ToString("X08") +
-                    "\nInv  TF   CS   WinA" +
+                    "\nInv  TF   Wrld WinA" +
                     "\n0x" + Invulnerable.ToString("X02") +
                     " 0x" + TimeFac.ToString("X02") +
-                    " 0x" + Cutscene.ToString("X02") +
+                    " 0x" + ((byte)((WorldActive > 0) ? 1 : 0)).ToString("X02") +
                     " 0x" + WindowActive.ToString("X02");
             }
         }
@@ -263,25 +302,41 @@ namespace AdressLogger
 
         public void UpdateGame()
         {
-            if (_game == null)
+            try
             {
-                Process myProc = null;
-                try
+                if (_game == null)
                 {
-                    myProc = Process.GetProcessesByName("HorizonZeroDawn").OrderByDescending(x => x.StartTime)
-                    .FirstOrDefault(x => !x.HasExited);
+                    Process myProc = null;
+                    try
+                    {
+                        myProc = Process.GetProcessesByName(gameData[idx].executableName).OrderByDescending(x => x.StartTime)
+                        .FirstOrDefault(x => !x.HasExited);
+                    }
+                    catch (Exception e)
+                    {
+                        myProc = null;
+                    }
+                    if (myProc == null)
+                        return;
+                    _game = myProc;
+                    logState = loggingStates.Idle;
+                    labelState.Text = "State: Idle";
                 }
-                catch (Exception e)
+                else if (_game.HasExited)
                 {
-                    myProc = null;
+                    _game = null;
+                    labelState.Text = "State: Disconnected";
+                    if (loggingInProg())
+                    {
+                        StopLogging();
+                    }
                 }
-                if (myProc == null)
-                    return;
-                _game = myProc;
-                logState = loggingStates.Idle;
-                labelState.Text = "State: Idle";
+                else
+                {
+                    UpdateGameActive();
+                }
             }
-            else if (_game.HasExited)
+            catch (Exception e)
             {
                 _game = null;
                 labelState.Text = "State: Disconnected";
@@ -289,10 +344,6 @@ namespace AdressLogger
                 {
                     StopLogging();
                 }
-            }
-            else
-            {
-                UpdateGameActive();
             }
         }
 
@@ -319,6 +370,17 @@ namespace AdressLogger
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            idx = comboBox1.SelectedIndex;
+            _game = null;
+            labelState.Text = "State: Disconnected";
+            if (loggingInProg())
+            {
+                StopLogging();
             }
         }
     }

@@ -38,6 +38,7 @@ namespace AdressLogger
             this.nUD_Time = new System.Windows.Forms.NumericUpDown();
             this.labelState = new System.Windows.Forms.Label();
             this.labelInfo = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_Time)).BeginInit();
             this.SuspendLayout();
             // 
@@ -103,7 +104,7 @@ namespace AdressLogger
             // 
             this.labelState.AutoSize = true;
             this.labelState.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelState.Location = new System.Drawing.Point(12, 289);
+            this.labelState.Location = new System.Drawing.Point(74, 289);
             this.labelState.Name = "labelState";
             this.labelState.Size = new System.Drawing.Size(177, 24);
             this.labelState.TabIndex = 0;
@@ -119,11 +120,25 @@ namespace AdressLogger
             this.labelInfo.TabIndex = 0;
             this.labelInfo.Text = "Vel:\r\nnan\r\nHead:\r\nnan";
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "HZD",
+            "HZDR",
+            "HFW"});
+            this.comboBox1.Location = new System.Drawing.Point(12, 294);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(56, 21);
+            this.comboBox1.TabIndex = 3;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(245, 323);
+            this.ClientSize = new System.Drawing.Size(257, 323);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.nUD_Time);
             this.Controls.Add(this.buttonLogStuff);
             this.Controls.Add(this.labelState);
@@ -136,7 +151,7 @@ namespace AdressLogger
             this.MinimizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Tallneck At Home:";
+            this.Text = "Tallneck At Home";
             this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.nUD_Time)).EndInit();
             this.ResumeLayout(false);
@@ -154,6 +169,7 @@ namespace AdressLogger
         private System.Windows.Forms.NumericUpDown nUD_Time;
         private System.Windows.Forms.Label labelState;
         private System.Windows.Forms.Label labelInfo;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 

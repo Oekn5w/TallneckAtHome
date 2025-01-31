@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8AF4740B-18A0-4743-862B-7C99DC29F391}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>AdressLogger</RootNamespace>
-    <AssemblyName>AdressLogger</AssemblyName>
+    <RootNamespace>TaH</RootNamespace>
+    <AssemblyName>TallneckAtHome</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -72,6 +72,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

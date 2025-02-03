@@ -103,10 +103,10 @@ namespace AdressLogger
             // labelState
             // 
             this.labelState.AutoSize = true;
-            this.labelState.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelState.Location = new System.Drawing.Point(74, 289);
+            this.labelState.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelState.Location = new System.Drawing.Point(100, 292);
             this.labelState.Name = "labelState";
-            this.labelState.Size = new System.Drawing.Size(177, 24);
+            this.labelState.Size = new System.Drawing.Size(154, 20);
             this.labelState.TabIndex = 0;
             this.labelState.Text = "State: Disconnected";
             // 
@@ -124,12 +124,13 @@ namespace AdressLogger
             // 
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "HZD",
+            "HZD (Steam)",
+            "HZD (GoG)",
             "HZDR",
             "HFW"});
             this.comboBox1.Location = new System.Drawing.Point(12, 294);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(56, 21);
+            this.comboBox1.Size = new System.Drawing.Size(82, 21);
             this.comboBox1.TabIndex = 3;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 

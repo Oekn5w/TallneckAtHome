@@ -30,7 +30,7 @@ namespace AdressLogger
             public DeepPointer[] ptr;
         };
 
-        static GameData[] gameData = new GameData[3];
+        static GameData[] gameData = new GameData[4];
 
         public Form1()
         {
@@ -55,8 +55,24 @@ namespace AdressLogger
                 new DeepPointer("", 0x07152640) // tabbed out
             };
 
-            gameData[1].executableName = "HorizonZeroDawnRemastered";
+            // GoG
+            gameData[1].executableName = "HorizonZeroDawn";
             gameData[1].ptr = new DeepPointer[]
+            {
+                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x120}),
+                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x128}),
+                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x130}),
+                //new DeepPointer("", 0x0714C728, new int[] {0x160}), // time played
+                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x1F0,0x60}),
+                new DeepPointer("", 0x0714C728, new int[] {0x20}),
+                new DeepPointer("", 0x0714C728, new int[] {0x4B4}),
+                new DeepPointer("", 0x0714C728, new int[] {0x158}), // time factor
+                new DeepPointer("", 0x0714C728), // world-active
+                new DeepPointer("", 0x0714F538) // tabbed out
+            };
+
+            gameData[2].executableName = "HorizonZeroDawnRemastered";
+            gameData[2].ptr = new DeepPointer[]
             {
                 new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x150}),
                 new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x158}),
@@ -69,8 +85,8 @@ namespace AdressLogger
                 new DeepPointer("", 0x099A9A38), // N/A
                 new DeepPointer("", 0x099A9A38, new int[] {0x172}) // tabbed in
             };
-            gameData[2].executableName = "HorizonForbiddenWest";
-            gameData[2].ptr = new DeepPointer[]
+            gameData[3].executableName = "HorizonForbiddenWest";
+            gameData[3].ptr = new DeepPointer[]
             {
                 new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xD8}),
                 new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE0}),

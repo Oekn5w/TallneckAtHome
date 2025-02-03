@@ -59,16 +59,16 @@ namespace AdressLogger
             gameData[1].executableName = "HorizonZeroDawn";
             gameData[1].ptr = new DeepPointer[]
             {
-                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x120}),
-                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x128}),
-                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x130}),
+                new DeepPointer("", 0x07146f88, new int[] {0x30,0x120}),
+                new DeepPointer("", 0x07146f88, new int[] {0x30,0x128}),
+                new DeepPointer("", 0x07146f88, new int[] {0x30,0x130}),
                 //new DeepPointer("", 0x0714C728, new int[] {0x160}), // time played
-                new DeepPointer("", 0x07149CC0, new int[] {0x30,0x1F0,0x60}),
+                new DeepPointer("", 0x07146f88, new int[] {0x30,0x1F0,0x60}),
                 new DeepPointer("", 0x0714C728, new int[] {0x20}),
                 new DeepPointer("", 0x0714C728, new int[] {0x4B4}),
                 new DeepPointer("", 0x0714C728, new int[] {0x158}), // time factor
                 new DeepPointer("", 0x0714C728), // world-active
-                new DeepPointer("", 0x0714F538) // tabbed out
+                new DeepPointer("", 0x0714c800) // tabbed out
             };
 
             gameData[2].executableName = "HorizonZeroDawnRemastered";

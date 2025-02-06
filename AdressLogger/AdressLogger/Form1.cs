@@ -74,16 +74,16 @@ namespace AdressLogger
             gameData[2].executableName = "HorizonZeroDawnRemastered";
             gameData[2].ptr = new DeepPointer[]
             {
-                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x150}),
-                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x158}),
-                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x160}),
-                //new DeepPointer("", 0x099A9A38, new int[] {0x160}), // time played
-                new DeepPointer("", 0x099A9A38 - 0x0E38, new int[] {0xA0,0,0x28,0x208,0x60}),
-                new DeepPointer("", 0x099A9A38, new int[] {0x20}),
-                new DeepPointer("", 0x099A9A38, new int[] {0x4DC}),
-                new DeepPointer("", 0x099A9A38, new int[] {0x158}), // time factor
-                new DeepPointer("", 0x099A9A38), // N/A
-                new DeepPointer("", 0x099A9A38, new int[] {0x172}) // tabbed in
+                new DeepPointer("", 0x099A9A00 - 0x0E58, new int[] {0xA0,0,0x28,0x150}),
+                new DeepPointer("", 0x099A9A00 - 0x0E58, new int[] {0xA0,0,0x28,0x158}),
+                new DeepPointer("", 0x099A9A00 - 0x0E58, new int[] {0xA0,0,0x28,0x160}),
+                //new DeepPointer("", 0x099A9A00, new int[] {0x160}), // time played
+                new DeepPointer("", 0x099A9A00 - 0x0E58, new int[] {0xA0,0,0x28,0x208,0x60}),
+                new DeepPointer("", 0x099A9A00, new int[] {0x20}),
+                new DeepPointer("", 0x099A9A00, new int[] {0x4DC}),
+                new DeepPointer("", 0x099A9A00, new int[] {0x158}), // time factor
+                new DeepPointer("", 0x099A9A00), // N/A
+                new DeepPointer("", 0x099A9A00, new int[] {0x172}) // tabbed in
             };
             gameData[3].executableName = "HorizonForbiddenWest";
             gameData[3].ptr = new DeepPointer[]

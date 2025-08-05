@@ -96,7 +96,7 @@ namespace AdressLogger
                 new DeepPointer("", 0x08983150, new int[] {0x4B4}),
                 new DeepPointer("", 0x08983150, new int[] {0x158}), // time factor
                 new DeepPointer("", 0x08983150), // N/A
-                new DeepPointer("", 0x08983150) // N/A
+                new DeepPointer("", 0x08983150, new int[] {0x3F8}) // N/A
             };
             comboBox1.SelectedIndex = 0;
         }
@@ -121,7 +121,7 @@ namespace AdressLogger
             public uint Loading;
             public byte TimeFac;
             public ulong WorldActive;
-            public byte WindowActive;
+            public byte infoDiverse;
 
             public myDataDef(ref Process _game)
             {
@@ -136,7 +136,7 @@ namespace AdressLogger
                 Loading = uint.MaxValue;
                 TimeFac = byte.MaxValue;
                 WorldActive = 0;
-                WindowActive = byte.MaxValue;
+                infoDiverse = byte.MaxValue;
                 if (_game != null)
                 {
                     PosX = gameData[idx].ptr[0].Deref<Double>(_game, Double.NaN);
@@ -147,7 +147,7 @@ namespace AdressLogger
                     Loading = gameData[idx].ptr[5].Deref<uint>(_game, uint.MaxValue);
                     TimeFac = gameData[idx].ptr[6].Deref<byte>(_game, byte.MaxValue);
                     WorldActive = gameData[idx].ptr[7].Deref<ulong>(_game, ulong.MaxValue);
-                    WindowActive = gameData[idx].ptr[8].Deref<byte>(_game, byte.MaxValue);
+                    infoDiverse = gameData[idx].ptr[8].Deref<byte>(_game, byte.MaxValue);
                 }
             }
 
@@ -182,14 +182,14 @@ namespace AdressLogger
 
             public static string LogHeaderFile()
             {
-                return "t,t_rec,X,Y,Z,vel,head,invul,pause,load,timeMul,worldActive,windowActive";
+                return "t,t_rec,X,Y,Z,vel,head,invul,pause,load,timeMul,worldActive,div";
             }
 
             public string ToString(long timeRef = 0)
             {
-                // t,t_rec,X,Y,Z,vel,head,invul,pause,load,TF,worldA,WindowActive
+                // t,t_rec,X,Y,Z,vel,head,invul,pause,load,TF,worldA,div
                 double elapsedSecs = (Time.Ticks - timeRef) / ((double)System.TimeSpan.TicksPerSecond);
-                return Time.ToString("yyyy-MM-ddTHH-mm-ss.FFF") + "," + elapsedSecs.ToString("0.000") + "," + PosX.ToString("0.000") + "," + PosY.ToString("0.000") + "," + PosZ.ToString("0.000") + "," + Velocity.ToString("0.000") + "," + Heading.ToString("000") + ",0x" + Invulnerable.ToString("X02") + ",0x" + Pause.ToString("X08") + ",0x" + Loading.ToString("X08") + ",0x" + TimeFac.ToString("X02") + ",0x" + ((byte)((WorldActive>0)?1:0)).ToString("X02") + ",0x" + WindowActive.ToString("X02");
+                return Time.ToString("yyyy-MM-ddTHH-mm-ss.FFF") + "," + elapsedSecs.ToString("0.000") + "," + PosX.ToString("0.000") + "," + PosY.ToString("0.000") + "," + PosZ.ToString("0.000") + "," + Velocity.ToString("0.000") + "," + Heading.ToString("000") + ",0x" + Invulnerable.ToString("X02") + ",0x" + Pause.ToString("X08") + ",0x" + Loading.ToString("X08") + ",0x" + TimeFac.ToString("X02") + ",0x" + ((byte)((WorldActive>0)?1:0)).ToString("X02") + ",0x" + infoDiverse.ToString("X02");
             }
 
             public void WriteToLabels(out string textPos, out string textInfo, out string textStates)
@@ -201,11 +201,11 @@ namespace AdressLogger
                     "\nHead:\n" + Heading.ToString("000");
                 textStates = "States:\nPause " + Pause.ToString("X08") +
                     "\nLoads " + Loading.ToString("X08") +
-                    "\nInv  TF   Wrld WinA" +
+                    "\nInv  TF   Wrld Div" +
                     "\n0x" + Invulnerable.ToString("X02") +
                     " 0x" + TimeFac.ToString("X02") +
                     " 0x" + ((byte)((WorldActive > 0) ? 1 : 0)).ToString("X02") +
-                    " 0x" + WindowActive.ToString("X02");
+                    " 0x" + infoDiverse.ToString("X02");
             }
         }
 

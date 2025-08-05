@@ -81,7 +81,7 @@ namespace AdressLogger
             this.labelStates.Name = "labelStates";
             this.labelStates.Size = new System.Drawing.Size(200, 110);
             this.labelStates.TabIndex = 0;
-            this.labelStates.Text = "States:\r\nPause \r\nLoads \r\nInv  TF   CS   WinA\r\n0x00 0x00 0x00 0x00";
+            this.labelStates.Text = "States:\r\nPause \r\nLoads \r\nInv  TF   CS   Div\r\n0x00 0x00 0x00 0x00";
             // 
             // nUD_Time
             // 

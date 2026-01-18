@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8AF4740B-18A0-4743-862B-7C99DC29F391}</ProjectGuid>
+    <ProjectGuid>{2E3F90A2-2ECA-458A-8A49-BB46299EE289}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>TaH</RootNamespace>
-    <AssemblyName>TallneckAtHome</AssemblyName>
+    <RootNamespace>RunLogger</RootNamespace>
+    <AssemblyName>RunLogger</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,22 +48,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ASL_Ref\ASLScript.cs" />
-    <None Include="ASL_Ref\ASLParser.cs" />
-    <None Include="ASL_Ref\ASLState.cs" />
-    <Compile Include="ASL_Ref\DeepPointer.cs" />
-    <Compile Include="ASL_Ref\ProcessExtensions.cs" />
-    <Compile Include="ASL_Ref\WinAPI.cs" />
-    <Compile Include="TaH.cs">
+    <None Include="ASL_Refs\ASLParser.cs" />
+    <None Include="ASL_Refs\ASLScript.cs" />
+    <None Include="ASL_Refs\ASLState.cs" />
+    <Compile Include="ASL_Refs\DeepPointer.cs" />
+    <Compile Include="ASL_Refs\ProcessExtensions.cs" />
+    <Compile Include="RunLogger.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TaH.Designer.cs">
-      <DependentUpon>TaH.cs</DependentUpon>
+    <Compile Include="RunLogger.Designer.cs">
+      <DependentUpon>RunLogger.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="TaH.resx">
-      <DependentUpon>TaH.cs</DependentUpon>
+    <Compile Include="ASL_Refs\WinAPI.cs" />
+    <EmbeddedResource Include="RunLogger.resx">
+      <DependentUpon>RunLogger.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -72,7 +73,6 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

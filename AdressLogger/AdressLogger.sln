@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.34407.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TallneckAtHome", "AdressLogger\TallneckAtHome.csproj", "{8AF4740B-18A0-4743-862B-7C99DC29F391}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunLogger", "RunLogger\RunLogger.csproj", "{2E3F90A2-2ECA-458A-8A49-BB46299EE289}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8AF4740B-18A0-4743-862B-7C99DC29F391}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AF4740B-18A0-4743-862B-7C99DC29F391}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AF4740B-18A0-4743-862B-7C99DC29F391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E3F90A2-2ECA-458A-8A49-BB46299EE289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E3F90A2-2ECA-458A-8A49-BB46299EE289}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E3F90A2-2ECA-458A-8A49-BB46299EE289}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E3F90A2-2ECA-458A-8A49-BB46299EE289}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

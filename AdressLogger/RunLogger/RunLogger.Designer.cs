@@ -132,8 +132,10 @@ namespace RunLogger
             this.Controls.Add(this.tbLogFolder);
             this.Controls.Add(this.lblState);
             this.Controls.Add(this.btnLogCtl);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "RunLogger";
-            this.Text = "StalkerAtHome";
+            this.Text = "TallneckAtRunning";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RunLogger_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

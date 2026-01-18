@@ -86,11 +86,11 @@ namespace RunLogger
                 new GameDataEntry("posX",new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xD8}),"d2",true),
                 new GameDataEntry("posY",new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE0}),"d2",true),
                 new GameDataEntry("posZ",new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE8}),"d2",true),
-                new GameDataEntry("igt",new DeepPointer("", 0x08983150, new int[] {0x160}),"d2",true),
+                new GameDataEntry("igt",new DeepPointer("", 0x08983150, new int[] {0x120}),"d2",true),
                 new GameDataEntry("load",new DeepPointer("", 0x08983150, new int[] {0x4B4}),"inz",true),
                 new GameDataEntry("paused",new DeepPointer("", 0x08983150, new int[] {0x20}),"inz",true),
                 new GameDataEntry("invul",new DeepPointer("", 0x8982DA0, new int[] {0x1C10, 0x0, 0x10, 0xD0, 0x70}),"bnz",true),
-                new GameDataEntry("mountDestructability",new DeepPointer("", 0x08982DA0, new int[] {0x1C10, 0x0, 0x10, 0x80, 0xD0}),"lx",true)
+                new GameDataEntry("mountDestructability",new DeepPointer("", 0x08982DA0, new int[] {0x1C10, 0x0, 0x10, 0x80, 0xD0}),"ptr",true)
             };
             dataBuf = new List<string>();
             dataBuf.Capacity = BUFFER_CAPA;
@@ -204,15 +204,15 @@ namespace RunLogger
             }
             else if (entry.type.StartsWith("i"))
             {
-                int value;
+                uint value;
                 if (entry.type.EndsWith("nz"))
                 {
-                    value = entry.ptr.Deref<int>(gameProcess, 0);
+                    value = entry.ptr.Deref<uint>(gameProcess, 0);
                     return (value > 0).ToString();
                 }
                 else
                 {
-                    value = entry.ptr.Deref<int>(gameProcess, int.MaxValue);
+                    value = entry.ptr.Deref<uint>(gameProcess, uint.MaxValue);
                     if (entry.type.EndsWith("x"))
                         return "0x" + value.ToString("X08");
                     else
@@ -221,20 +221,39 @@ namespace RunLogger
             }
             else if (entry.type.StartsWith("l"))
             {
-                long value;
+                ulong value;
                 if (entry.type.EndsWith("nz"))
                 {
-                    value = entry.ptr.Deref<long>(gameProcess, 0);
+                    value = entry.ptr.Deref<ulong>(gameProcess, 0);
                     return (value > 0).ToString();
                 }
                 else
                 {
-                    value = entry.ptr.Deref<long>(gameProcess, long.MaxValue);
+                    value = entry.ptr.Deref<ulong>(gameProcess, ulong.MaxValue);
                     if (entry.type.EndsWith("x"))
                         return "0x" + value.ToString("X016");
                     else
                         return value.ToString();
                 }
+            }
+            else if (entry.type == "ptr")
+            {
+                ulong value;
+                value = entry.ptr.Deref<ulong>(gameProcess, ulong.MaxValue);
+                int retVal;
+                if (value == 0)
+                {
+                    retVal = 0;
+                }
+                else if(value == ulong.MaxValue)
+                {
+                    retVal = -1;
+                }
+                else
+                {
+                    retVal = 1;
+                }
+                return retVal.ToString();
             }
             throw new Exception("Unrecognized pointer type");
         }
@@ -265,6 +284,7 @@ namespace RunLogger
             sw.Close();
             dataBuf.Clear();
             lblWriting.Text = DateTime.Now.ToLongTimeString() + ": Wrote " + fileName.Substring(tbLogFolder.Text.Length + 1);
+            lblBuffer.Text = "";
         }
 
         public void UpdateButtonState()

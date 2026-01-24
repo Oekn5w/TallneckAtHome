@@ -11,6 +11,9 @@ using System.Windows.Forms;
 using LiveSplit.ComponentUtil;
 using System.Diagnostics;
 using System.IO;
+using OBSWebsocketDotNet;
+using OBSWebsocketDotNet.Types;
+using OBSWebsocketDotNet.Types.Events;
 
 namespace RunLogger
 {
@@ -48,6 +51,7 @@ namespace RunLogger
         struct GameData
         {
             public string executableName;
+            public string abbreviation;
             public GameDataEntry[] gamePtrDef;
         };
 
@@ -63,30 +67,36 @@ namespace RunLogger
 #else
         const int BUFFER_CAPA = 7200;
 #endif
+        OBSWebsocket obs;
+        string obs_url = "ws://127.0.0.1:4455";
+        string obs_pw = "";
+        int gameIdx = 0;
 
         public RunLogger()
         {
             InitializeComponent();
             gameData = new GameData[2];
             gameData[0].executableName = "HorizonZeroDawn";
+            gameData[0].abbreviation = "HZD";
             gameData[0].gamePtrDef = new GameDataEntry[]
             {
                 new GameDataEntry("posX",new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x120}),"d2",true),
                 new GameDataEntry("posY",new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x128}),"d2",true),
                 new GameDataEntry("posZ",new DeepPointer("", 0x0714cdc8, new int[] {0x30,0x130}),"d2",true),
-                new GameDataEntry("igt",new DeepPointer("", 0x0714F830, new int[] {0x160}),"d2",true),
+                new GameDataEntry("igt",new DeepPointer("", 0x0714F830, new int[] {0x160}),"d3",true),
                 new GameDataEntry("load",new DeepPointer("", 0x0714F830, new int[] {0x4B4}),"inz",true),
                 new GameDataEntry("paused",new DeepPointer("", 0x0714F830, new int[] {0x20}),"inz",true),
                 new GameDataEntry("invul",new DeepPointer("", 0x0714cdc8, new int[] {0x30, 0x1F0, 0x60}),"bnz",true),
                 new GameDataEntry("mounted",new DeepPointer("", 0x0714cdc8, new int[] {0x30, 0x1C8}),"lnz",true)
             };
             gameData[1].executableName = "HorizonForbiddenWest";
+            gameData[1].abbreviation = "HFW";
             gameData[1].gamePtrDef = new GameDataEntry[]
             {
                 new GameDataEntry("posX",new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xD8}),"d2",true),
                 new GameDataEntry("posY",new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE0}),"d2",true),
                 new GameDataEntry("posZ",new DeepPointer("", 0x8982DA0, new int[] { 0x1C10, 0x0, 0x10, 0xE8}),"d2",true),
-                new GameDataEntry("igt",new DeepPointer("", 0x08983150, new int[] {0x120}),"d2",true),
+                new GameDataEntry("igt",new DeepPointer("", 0x08983150, new int[] {0x120}),"d3",true),
                 new GameDataEntry("load",new DeepPointer("", 0x08983150, new int[] {0x4B4}),"inz",true),
                 new GameDataEntry("paused",new DeepPointer("", 0x08983150, new int[] {0x20}),"inz",true),
                 new GameDataEntry("invul",new DeepPointer("", 0x8982DA0, new int[] {0x1C10, 0x0, 0x10, 0xD0, 0x70}),"bnz",true),
@@ -101,11 +111,66 @@ namespace RunLogger
             cbGame.SelectedIndex = 0;
             UpdateButtonState();
             UpdateStateLbl();
+            lblOBS.Text = "OBS disconnected";
+            obs = new OBSWebsocket();
+            obs.Connected += onOBSConnect;
+            obs.Disconnected += onOBSDisconnect;
+            obs.RecordStateChanged += onOBSRecordStateChanged;
+            string[] args = Environment.GetCommandLineArgs();
+            for (int i = 1; i < args.Length; ++i)
+            {
+                switch (args[i])
+                {
+                    case "--dir":
+                        tbLogFolder.Text = args[++i];
+                        break;
+                    case "--obsurl":
+                        obs_url = args[++i];
+                        break;
+                    case "--obspw":
+                        obs_pw = args[++i];
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (obs_pw == "")
+            {
+                obs_pw = Environment.GetEnvironmentVariable("OBS_WS_PW");
+                if(obs_pw ==null)
+                {
+                    obs_pw = "";
+                }
+            }
+            timerOBS_Tick(null, null);
         }
 
         private void btnLogCtl_Click(object sender, EventArgs e)
         {
-            loggingRequest = !loggingRequest;
+            if (!loggingRequest)
+            {
+                RequestStartLogging();
+            }
+            else
+            {
+                RequestStopLogging();
+            }
+        }
+
+        private void RequestStartLogging()
+        {
+            if (!Directory.Exists(tbLogFolder.Text))
+            {
+                return;
+            }
+            loggingRequest = true;
+            UpdateButtonState();
+            UpdateStateLbl();
+        }
+
+        private void RequestStopLogging()
+        {
+            loggingRequest = false;
             UpdateButtonState();
             UpdateStateLbl();
         }
@@ -134,16 +199,15 @@ namespace RunLogger
             string log = DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss.FFF");
             if (loggingInProg)
             {
-                int idx = cbGame.SelectedIndex;
-                int nData = gameData[idx].gamePtrDef.Length;
+                int nData = gameData[gameIdx].gamePtrDef.Length;
                 string temp;
                 for (int i = 0; i < nData; i++)
                 {
-                    if (!gameData[idx].gamePtrDef[i].toLog)
+                    if (!gameData[gameIdx].gamePtrDef[i].toLog)
                         continue;
                     try
                     {
-                        temp = getDataEntry(gameData[idx].gamePtrDef[i]);
+                        temp = getDataEntry(gameData[gameIdx].gamePtrDef[i]);
                     }
                     catch (Win32Exception e)
                     {
@@ -245,7 +309,7 @@ namespace RunLogger
                 {
                     retVal = 0;
                 }
-                else if(value == ulong.MaxValue)
+                else if (value == ulong.MaxValue)
                 {
                     retVal = -1;
                 }
@@ -298,7 +362,6 @@ namespace RunLogger
                 if (Directory.Exists(tbLogFolder.Text))
                 {
                     btnLogCtl.Enabled = true;
-
                 }
                 else
                 {
@@ -324,7 +387,31 @@ namespace RunLogger
                     Process myProc = null;
                     try
                     {
-                        myProc = Process.GetProcessesByName(gameData[cbGame.SelectedIndex].executableName).OrderByDescending(x => x.StartTime)
+                        if (!loggingRequest || dataBuf.Count() == 0)
+                        {
+                            if (cbGame.SelectedIndex != 0)
+                            {
+                                int i;
+                                for (i = 0; i < gameData.Length; ++i)
+                                {
+                                    if (gameData[i].abbreviation == (string)cbGame.SelectedItem)
+                                    {
+                                        gameIdx = i;
+                                        break;
+                                    }
+                                }
+                                if (i == gameData.Length)
+                                { // no match, shouldn't happen
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                gameIdx++;
+                                gameIdx = gameIdx % gameData.Length;
+                            }
+                        }
+                        myProc = Process.GetProcessesByName(gameData[gameIdx].executableName).OrderByDescending(x => x.StartTime)
                         .FirstOrDefault(x => !x.HasExited);
                     }
                     catch (Exception e)
@@ -349,7 +436,20 @@ namespace RunLogger
 
         public void UpdateStateLbl()
         {
-            lblState.Text = (gameProcess != null ? "Connected" : "Disconnected") + " | " + (loggingRequest ? "Logging" : "Not Logging");
+            string temp = "";
+            if (gameProcess != null)
+            {
+                if (cbGame.SelectedIndex == 0)
+                {
+                    temp = gameData[gameIdx].abbreviation + " ";
+                }
+                temp += "Connected";
+            }
+            else
+            {
+                temp = "Disconnected";
+            }
+            lblState.Text = temp + " | " + (loggingRequest ? "Logging" : "Not Logging");
         }
 
         private void tbLogFolder_TextChanged(object sender, EventArgs e)
@@ -364,10 +464,94 @@ namespace RunLogger
 
         private void RunLogger_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (loggingInProg && dataBuf.Count()>0)
+            if (loggingInProg && dataBuf.Count() > 0)
             {
                 WriteOutBuffer();
             }
+        }
+
+
+        private void onOBSConnect(object sender, EventArgs e)
+        {
+            BeginInvoke((MethodInvoker)(() =>
+            {
+                lblOBS.Text = "OBS connected";
+                btnSyncOBS.Enabled = true;
+                SyncOBSStatus();
+            }));
+
+        }
+
+        private void SyncOBSStatus()
+        {
+            if (!cbOBS.Checked || !obs.IsConnected)
+            {
+                return;
+            }
+            var curRecState = obs.GetRecordStatus();
+            if (curRecState.IsRecording)
+            {
+                if (Directory.Exists(tbLogFolder.Text) && !loggingRequest)
+                {
+                    RequestStartLogging();
+                }
+            }
+            else
+            {
+                if (loggingRequest)
+                {
+                    RequestStopLogging();
+                }
+            }
+        }
+
+        private void onOBSDisconnect(object sender, OBSWebsocketDotNet.Communication.ObsDisconnectionInfo e)
+        {
+            BeginInvoke((MethodInvoker)(() =>
+            {
+                lblOBS.Text = "OBS disconnected";
+                btnSyncOBS.Enabled = false;
+            }));
+        }
+
+        private void onOBSRecordStateChanged(object sender, RecordStateChangedEventArgs args)
+        {
+            if (!cbOBS.Checked)
+            {
+                return;
+            }
+            BeginInvoke((MethodInvoker)(() =>
+            {
+
+                switch (args.OutputState.State)
+                {
+                    case OutputState.OBS_WEBSOCKET_OUTPUT_STARTED:
+                    case OutputState.OBS_WEBSOCKET_OUTPUT_RESUMED:
+                        RequestStartLogging();
+                        break;
+
+                    case OutputState.OBS_WEBSOCKET_OUTPUT_STOPPED:
+                    case OutputState.OBS_WEBSOCKET_OUTPUT_PAUSED:
+                        RequestStopLogging();
+                        break;
+
+                    default:
+                        break;
+                }
+            }));
+        }
+
+        private void timerOBS_Tick(object sender, EventArgs e)
+        {
+            if (!obs.IsConnected)
+            {
+                obs.ConnectAsync(obs_url, obs_pw);
+            }
+        }
+
+        private void btnSyncOBS_Click(object sender, EventArgs e)
+        {
+            SyncOBSStatus();
         }
     }
 }

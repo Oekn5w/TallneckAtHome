@@ -332,13 +332,12 @@ namespace RunLogger
             }
             StreamWriter sw = new StreamWriter(fileName);
             string header = "Time";
-            int idx = cbGame.SelectedIndex;
-            int nData = gameData[idx].gamePtrDef.Length;
+            int nData = gameData[gameIdx].gamePtrDef.Length;
             for (int i = 0; i < nData; i++)
             {
-                if (!gameData[idx].gamePtrDef[i].toLog)
+                if (!gameData[gameIdx].gamePtrDef[i].toLog)
                     continue;
-                header += "," + gameData[idx].gamePtrDef[i].name;
+                header += "," + gameData[gameIdx].gamePtrDef[i].name;
             }
             sw.WriteLine(header);
             for (int i = 0; i < dataBuf.Count(); i++)
@@ -488,7 +487,15 @@ namespace RunLogger
             {
                 return;
             }
-            var curRecState = obs.GetRecordStatus();
+            RecordingStatus curRecState;
+            try
+            {
+                curRecState = obs.GetRecordStatus();
+            }
+            catch(Exception e)
+            {
+                return;
+            }
             if (curRecState.IsRecording)
             {
                 if (Directory.Exists(tbLogFolder.Text) && !loggingRequest)
